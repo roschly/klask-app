@@ -1,0 +1,10 @@
+streamlit
+pandas
+seaborn
+jsons
+trueskill
+pyyaml
+plotly
+pydot
+python-dateutil
+pytest
