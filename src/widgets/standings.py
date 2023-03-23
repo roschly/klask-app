@@ -7,14 +7,14 @@ import numpy as np
 
 from .utils import ts_setup
 from ..elo_system import ELOSystem
-from ..db import Match
+from .. import db
 from .winrate_rating import weighted_average_winrate
 
 
 ts_setup()
 
 
-def _get_elo_ratings(matches: List[Match]):
+def _get_elo_ratings(matches: List[db.Match]):
     all_winners = {match.winner for match in matches}
     all_losers = {match.loser for match in matches}
     all_players = all_winners | all_losers
@@ -27,7 +27,7 @@ def _get_elo_ratings(matches: List[Match]):
     return elo_system.players
 
 
-def _get_ratings(matches: List[Match], default_rating: float = 25):
+def _get_ratings(matches: List[db.Match], default_rating: float = 25):
     all_winners = {match.winner for match in matches}
     all_losers = {match.loser for match in matches}
     all_players = all_winners | all_losers
@@ -44,7 +44,7 @@ def _get_ratings(matches: List[Match], default_rating: float = 25):
 
 
 def _championed_player_name(standings: pd.DataFrame) -> pd.DataFrame:
-    df = pd.read_csv("src/hall_of_fame.csv")
+    df = pd.read_csv(db.HALL_OF_FAME)
     df.sort_values(["year", "month"], ascending=[False, False], inplace=True)
     champion = df.iloc[0]["champion"]
     standings.loc[standings["Player"] == champion, "Player"] = champion + " " + "🏆"
@@ -60,7 +60,7 @@ def _player_streak(streak: str):
 
 
 @st.cache
-def _get_standings_frame(matches: List[Match]) -> pd.DataFrame:
+def _get_standings_frame(matches: List[db.Match]) -> pd.DataFrame:
     players = _get_ratings(matches)
     players_elo = _get_elo_ratings(matches)
 
@@ -131,14 +131,15 @@ def _get_standings_frame(matches: List[Match]) -> pd.DataFrame:
     return df
 
 
-def standings(matches: List[Match]) -> None:
+def standings(matches: List[db.Match]) -> None:
     """Standings dataframe widget"""
     frame = _get_standings_frame(matches)
     st.subheader("Standings")
 
-    # add emoji to champion name
+    # add emoji to champion name, if hall of fame with previous winner exists
     # use copy to avoid mutating cached dataframe
-    frame = _championed_player_name(frame.copy())
+    if db.HALL_OF_FAME.exists():
+        frame = _championed_player_name(frame.copy())
 
     st.table(
         frame.style.format(

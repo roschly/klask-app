@@ -24,9 +24,9 @@ def _load_datetime(obj: str):
 
 jsons.set_deserializer(lambda obj, cls, **_: _load_datetime(obj), datetime)
 
-MATCH_FOLDER = None
-# MATCH_FOLDER = Path(__file__).parent.parent / "matches"
-PLAYER_FILE = Path(__file__).parent / "players.yml"
+MATCH_FOLDER: Path = None
+PLAYER_FILE: Path = None
+HALL_OF_FAME: Path = None
 
 
 def list_matches() -> List[Match]:
@@ -56,7 +56,6 @@ def create_match(winner: str, loser: str, score: str, date: datetime = None) -> 
     assert winner, "specify a non-empty winner"
     assert loser, "specify a non-empty loser"
     assert winner != loser, "specify different winner/loser"
-    date = date or datetime.utcnow()
-    new_match = Match(winner, loser, score, date, None)
-    new_file = MATCH_FOLDER / f"{uuid1()}.json"
+    new_match = Match(winner, loser, score, None)
+    new_file = MATCH_FOLDER / (new_match.to_filename_str() + ".json")
     new_file.write_text(jsons.dumps(new_match))

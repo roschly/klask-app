@@ -9,6 +9,7 @@ def bootstrap():
     """Bootstrap app with players in a players.yml file and matches."""
 
     print("Bootstrapping app...")
+    N = 50  # number of matches to create
 
     # create players.yml file
     players = [
@@ -28,7 +29,7 @@ def bootstrap():
             f.write(f"- {player}\n")
 
     # create matches
-    for _ in range(30):
+    for _ in range(N):
         player1 = random.choice(players)
         player2 = random.choice([p for p in players if p != player1])
         loser_score = random.randint(0, 5)
