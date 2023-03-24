@@ -4,13 +4,13 @@ from pathlib import Path
 import streamlit as st
 import pandas as pd
 
-from ..db import Match
+from .. import db
 from .nemesis import nemesis_plot
 from .versus_stats import versus_stats_widget
 from .match_distribution import match_distribution_widget
 
 
-def extra_stats(matches: List[Match]) -> None:
+def extra_stats(matches: List[db.Match]) -> None:
     """Section that adds expandable extra stats"""
 
     df_matches = pd.DataFrame(matches)
@@ -39,8 +39,8 @@ def extra_stats(matches: List[Match]) -> None:
         versus_stats_widget(df_matches)
 
     # hall of fame
-    if Path("src/hall_of_fame.csv").exists():
+    if db.HALL_OF_FAME.exists():
         with st.expander("Hall of Fame"):
-            df = pd.read_csv("src/hall_of_fame.csv")
+            df = pd.read_csv(db.HALL_OF_FAME)
             df.sort_values(["year", "month"], ascending=[False, False], inplace=True)
             st.table(df)

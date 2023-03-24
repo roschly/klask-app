@@ -1,2 +1,3 @@
 match_folder: matches
-bootstrap: True
+players: data/players.yml
+hall_of_fame: data/hall_of_fame.csv

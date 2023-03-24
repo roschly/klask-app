@@ -17,8 +17,8 @@ def tv_formatter(video: str):
 
 
 def matches_list(matches: List[Match]):
-    frame = pd.DataFrame.from_records([row.__dict__ for row in matches])
-    frame["date"] = frame["date"].dt.strftime("%A, %b %-d @ %H:%M")
+    frame = pd.DataFrame(matches)
+    frame["date"] = frame["date"].dt.strftime("%Y-%m-%d %H:%M:%S")
     frame["score"] = frame["score"].apply(egg_formatter)
     frame["video"] = frame["video"].apply(tv_formatter)
     frame = frame.iloc[::-1]
