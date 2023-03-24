@@ -19,25 +19,21 @@ def main():
     db.PLAYER_FILE = Path(cfg["players"])
     db.HALL_OF_FAME = Path(cfg["hall_of_fame"])
 
-    # if no players and no matches: bootstrap
-    if not db.PLAYER_FILE.exists() and (
-        not db.MATCH_FOLDER.exists() or len(list(db.MATCH_FOLDER.iterdir())) == 0
-    ):
-        if not db.MATCH_FOLDER.exists():
-            db.MATCH_FOLDER.mkdir(parents=True)
-        bootstrap()
+    do_bootstrap = False
+    # if no player file and no matches folder exist, booststrap
+    if not db.PLAYER_FILE.exists() and not db.MATCH_FOLDER.exists():
+        do_bootstrap = True
 
-    # if no players, but matches: error
-    elif not db.PLAYER_FILE.exists() and len(list(db.MATCH_FOLDER.iterdir())) > 0:
-        st.error(
-            f"Found no players file at '{db.PLAYER_FILE}', but found existing matches in '{db.MATCH_FOLDER}'. Either add players.yml matching those in matches or remove matches."
-        )
-        return
-
-    # if players, but no matches: do nothing
-    # if players and matches: do nothing
+    # create player file and matches folder if they dont exist
+    if not db.PLAYER_FILE.exists():
+        db.PLAYER_FILE.parent.mkdir(parents=True, exist_ok=True)
+        db.PLAYER_FILE.touch()
     if not db.MATCH_FOLDER.exists():
         db.MATCH_FOLDER.mkdir(parents=True)
+
+    # perfom the actual bootstrapping after folder and file creation
+    if do_bootstrap:
+        bootstrap()
 
     widgets.new_match()
 

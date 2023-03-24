@@ -45,12 +45,6 @@ def list_players() -> List[str]:
     return players
 
 
-def add_match(match: Match) -> None:
-    """Add a new match result."""
-    new_file = MATCH_FOLDER / f"{uuid1()}.json"
-    new_file.write_text(jsons.dumps(match))
-
-
 def create_match(winner: str, loser: str, score: str, date: datetime = None) -> None:
     """Submit a new match result."""
     assert winner, "specify a non-empty winner"

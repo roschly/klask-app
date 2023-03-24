@@ -33,4 +33,4 @@ def bootstrap():
         player1 = random.choice(players)
         player2 = random.choice([p for p in players if p != player1])
         loser_score = random.randint(0, 5)
-        db.add_match(Match(player1, player2, f"6-{loser_score}"))
+        db.create_match(winner=player1, loser=player2, score=f"6-{loser_score}")
