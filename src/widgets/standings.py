@@ -115,10 +115,10 @@ def _get_standings_frame(matches: List[db.Match]) -> pd.DataFrame:
                 "W": standing["W"],
                 "L": standing["L"],
                 "WR %": round(standing["win_rate"], 2),
-                "WAWR %": round(weighted_average_winrate(player, df_matches) * 100, 2),
-                "ELO": round(players_elo[player]["elo"]),
+                # "WAWR %": round(weighted_average_winrate(player, df_matches) * 100, 2),
+                # "ELO": round(players_elo[player]["elo"]),
                 "Rating": round(standing["Rating"], 2),
-                "TrueSkillLB": round(standing["TrueSkill_LC"], 2),
+                # "TrueSkillLB": round(standing["TrueSkill_LC"], 2),
                 "L10": standing["L10"],
                 "Streak": _player_streak(standing["Streak"]),
             }
