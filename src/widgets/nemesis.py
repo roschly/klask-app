@@ -63,7 +63,6 @@ def _find_nemeses(
     return nemeses
 
 
-@st.cache
 def nemesis_plot(df_matches: pd.DataFrame, matches: List[Match]) -> pydot.Dot:
     """Graphviz DOT graph of player nemeses."""
 
