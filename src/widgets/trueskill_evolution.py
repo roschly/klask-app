@@ -15,7 +15,6 @@ ts_setup()
 MU = 25
 
 
-@st.cache
 def _build_frame(matches: List[db.Match]) -> pd.DataFrame:
     p = {player: ts.Rating(MU) for player in db.list_players()}
     r = []

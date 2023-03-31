@@ -20,7 +20,6 @@ def _most_freq_result(A: str, B: str, df: pd.DataFrame) -> str:
     return matches.score.mode()[0]
 
 
-@st.cache
 def _get_individual_stats(player: str, matches: pd.DataFrame) -> pd.DataFrame:
     """stats from a player versus the rest"""
     all_players = db.list_players()

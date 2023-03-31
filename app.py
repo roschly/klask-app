@@ -20,7 +20,7 @@ def main():
     db.HALL_OF_FAME = Path(cfg["hall_of_fame"])
 
     do_bootstrap = False
-    # if no player file and no matches folder exist, booststrap
+    # if no player file and no matches folder exist, bootstrap
     if not db.PLAYER_FILE.exists() and not db.MATCH_FOLDER.exists():
         do_bootstrap = True
 

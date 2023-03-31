@@ -3,7 +3,7 @@ from pathlib import Path
 import streamlit as st
 
 
-@st.cache()
+@st.cache_data
 def generate_background() -> str:
     file = Path(__file__).parent / "bg-min.png"
     data = file.read_bytes()
@@ -18,12 +18,16 @@ def generate_html():
 
 def snowfall():
     html = generate_html()
-    st.markdown("""
+    st.markdown(
+        """
     <style>
     .stApp {
         background-image: url("data:image/png;base64,%s");
         background-size: cover;
     }
     </style>
-    """ % generate_background(), unsafe_allow_html=True)
+    """
+        % generate_background(),
+        unsafe_allow_html=True,
+    )
     st.markdown(html, unsafe_allow_html=True)
