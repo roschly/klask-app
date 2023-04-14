@@ -14,7 +14,6 @@ def extra_stats(matches: List[db.Match]) -> None:
     """Section that adds expandable extra stats"""
 
     df_matches = pd.DataFrame(matches)
-    dot = nemesis_plot(df_matches, matches)
 
     st.subheader("Extra stats")
 
@@ -22,6 +21,7 @@ def extra_stats(matches: List[db.Match]) -> None:
     with st.expander("Match distribution"):
         match_distribution_widget(df_matches)
 
+    # nemesis and domination plot
     with st.expander("Nemesis and domination plot"):
         st.write(
             "A is a nemesis of B (A --> B), if A has the highest winrate over B (and at least > 50%) AND they have played 3 or more matches. More than one nemesis is possible."
@@ -32,7 +32,7 @@ def extra_stats(matches: List[db.Match]) -> None:
         st.write(
             "Legend: blue dashed == nemesis, red dashed == domination, purple solid == nemesis AND domination."
         )
-        st.graphviz_chart(dot.to_string())
+        st.graphviz_chart(nemesis_plot(df_matches, matches).to_string())
 
     # versus stats
     with st.expander("Versus stats"):

@@ -14,15 +14,13 @@ def bootstrap():
 
     # create players.yml file
     players = [
-        "Asger A",
-        "Asger O",
-        "Caspar",
-        "Jens",
-        "Lasse",
-        "Mads",
-        "Martin",
-        "Robert",
-        "Soeren",
+        "Captain America",
+        "Iron Man",
+        "Hulk",
+        "Thor",
+        "Ant-Man",
+        "Blade",
+        "Spider-Man",
     ]
 
     with open(db.PLAYER_FILE, "w+", encoding="utf-8") as f:

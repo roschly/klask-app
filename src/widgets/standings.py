@@ -59,7 +59,6 @@ def _player_streak(streak: str):
     return streak
 
 
-@st.cache
 def _get_standings_frame(matches: List[db.Match]) -> pd.DataFrame:
     players = _get_ratings(matches)
     players_elo = _get_elo_ratings(matches)
