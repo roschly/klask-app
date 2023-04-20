@@ -8,7 +8,7 @@ import src.db as db
 from .winrate_rating import num_matches_between_players
 
 
-def match_distribution_widget(matches: pd.DataFrame) -> None:
+def match_distribution_widget(head2head: dict[str, dict[str, int]]) -> None:
     """
     A sorted stacked bar chart of player matches.
     I.e. each stack represents the absolute/relative number of matches against a specific player (regardless of outcome).
@@ -22,7 +22,7 @@ def match_distribution_widget(matches: pd.DataFrame) -> None:
     match_dist = {p: {p: 0} for p in all_players}
 
     for p1, p2 in combinations(all_players, 2):
-        num_matches = num_matches_between_players(A=p1, B=p2, df=matches)
+        num_matches = num_matches_between_players(A=p1, B=p2, head2head=head2head)
         # num_matches_between_players(p1, p2) = num_matches_between_players(p2, p1)
         match_dist[p1][p2] = num_matches
         match_dist[p2][p1] = num_matches

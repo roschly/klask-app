@@ -43,7 +43,7 @@ def main():
     if matches:
         widgets.standings(history["players"], history["records"])
         widgets.trueskill_evolution(history["ratings_history"])
-        widgets.extra_stats(matches)
+        widgets.extra_stats(history["h2h"], history["players"])
         widgets.matches_list(matches)
 
 

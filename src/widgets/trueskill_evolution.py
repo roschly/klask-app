@@ -3,8 +3,6 @@ import streamlit as st
 
 pd.options.plotting.backend = "plotly"
 
-MU = 25
-
 
 def trueskill_evolution(ratings_history: pd.DataFrame) -> None:
     st.subheader("Trueskill Evolution")

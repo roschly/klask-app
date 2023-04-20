@@ -1,58 +1,39 @@
-from typing import List, Tuple
-
-import pandas as pd
 import pydot
-import streamlit as st
 import matplotlib
+from trueskill import Rating
 
-from ..db import Match
-import src.db as db
 from .winrate_rating import calc_winrate, num_matches_between_players
-from .standings import _get_standings_frame
-from .trueskill_evolution import MU
 
 
 def _find_dominators(
     player: str,
-    all_players: List[str],
-    matches: pd.DataFrame,
-) -> List[str]:
+    winrates: list[tuple[str, float]],
+    head2head: dict[str, dict[str, int]],
+) -> list[str]:
     """Find the list of players that dominate this player."""
-    # list of opponents and winrate against them
-    wrs = [
-        (opponent, calc_winrate(player, opponent, matches))
-        for opponent in all_players
-        if opponent != player
-    ]
     # only keep valid dominance winrates, i.e. <= 0.25 and at least 3 matches
     dominators = [
         p
-        for (p, wr) in wrs
-        if wr <= 0.25 and num_matches_between_players(player, p, matches) >= 3
+        for (p, wr) in winrates
+        if wr <= 0.25 and num_matches_between_players(player, p, head2head) >= 3
     ]
     return dominators
 
 
 def _find_nemeses(
     player: str,
-    all_players: List[str],
-    matches: pd.DataFrame,
-) -> List[str]:
+    winrates: list[tuple[str, float]],
+    head2head: dict[str, dict[str, int]],
+) -> list[str]:
     """Find the list of possible nemeses of the player.
     A nemeses is the one(s) that the player has the lowest winrate against,
     provided it is lower than 50 % and at least 3 matches have been played.
     """
-    # list of opponents and winrate against them
-    wrs = [
-        (opponent, calc_winrate(player, opponent, matches))
-        for opponent in all_players
-        if opponent != player
-    ]
     # only keep valid nemesis winrates, i.e. < 0.5 and at least 3 matches
     wrs = [
         (p, wr)
-        for (p, wr) in wrs
-        if wr < 0.5 and num_matches_between_players(player, p, matches) >= 3
+        for (p, wr) in winrates
+        if wr < 0.5 and num_matches_between_players(player, p, head2head) >= 3
     ]
     # if no opponents meet the criteria, return empty list
     if wrs == []:
@@ -63,18 +44,15 @@ def _find_nemeses(
     return nemeses
 
 
-def nemesis_plot(df_matches: pd.DataFrame, matches: List[Match]) -> pydot.Dot:
+def nemesis_plot(
+    head2head: dict[str, dict[str, int]], players: list[Rating]
+) -> pydot.Dot:
     """Graphviz DOT graph of player nemeses."""
 
     dot = pydot.Dot()
-    standings = _get_standings_frame(matches)
 
-    all_players = db.list_players()
-    for player in all_players:
-        if player not in standings["Player"].values:
-            rating = MU
-        else:
-            rating = standings[standings["Player"] == player]["Rating"].values[0]
+    for player in players:
+        rating = players[player].mu
 
         # cap rating between Lower and Upper values, e.g. 15 and 35
         # convert to range [0;1] for color map
@@ -92,9 +70,15 @@ def nemesis_plot(df_matches: pd.DataFrame, matches: List[Match]) -> pydot.Dot:
             )
         )
 
-    for player in all_players:
-        nemeses = set(_find_nemeses(player, all_players, df_matches))
-        dominators = set(_find_dominators(player, all_players, df_matches))
+    for player in players:
+        winrates = [
+            (opponent, calc_winrate(player, opponent, head2head))
+            for opponent in players.keys()
+            if opponent != player
+        ]
+
+        nemeses = set(_find_nemeses(player, winrates, head2head))
+        dominators = set(_find_dominators(player, winrates, head2head))
         both = nemeses.intersection(dominators)
 
         for p in nemeses.union(dominators):
@@ -108,7 +92,7 @@ def nemesis_plot(df_matches: pd.DataFrame, matches: List[Match]) -> pydot.Dot:
             # if p is only a nemesis
             elif p in nemeses - both:
                 color = "blue"
-            winrate = calc_winrate(player, p, df_matches)
+            winrate = calc_winrate(player, p, head2head)
             edge = pydot.Edge(
                 pydot.Node(name=p),
                 pydot.Node(name=player),
