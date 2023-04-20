@@ -1,15 +1,13 @@
-from typing import List
-import matplotlib.pyplot as plt
-import seaborn as sns
 import pandas as pd
 import streamlit as st
+
 from .. import db
 from ..elo_system import ELOSystem
 
 pd.options.plotting.backend = "plotly"
 
 
-def _build_frame(matches: List[db.Match]):
+def _build_frame(matches: list[db.Match]):
     elo_system = ELOSystem([player for player in db.players])
     # p = {player: ts.Rating(25) for player in db.players}
     r = []
@@ -30,7 +28,7 @@ def _build_frame(matches: List[db.Match]):
     return pd.DataFrame(r)
 
 
-def elo_evolution(matches: List[db.Match]):
+def elo_evolution(matches: list[db.Match]):
     st.subheader("ELO Evolution")
 
     frame = _build_frame(matches)

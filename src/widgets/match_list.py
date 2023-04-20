@@ -1,6 +1,6 @@
-from typing import List
 import pandas as pd
 import streamlit as st
+
 from ..db import Match
 
 
@@ -16,7 +16,7 @@ def tv_formatter(video: str):
     return ""
 
 
-def matches_list(matches: List[Match]):
+def matches_list(matches: list[Match]):
     frame = pd.DataFrame(matches)
     frame["date"] = frame["date"].dt.strftime("%Y-%m-%d %H:%M:%S")
     frame["score"] = frame["score"].apply(egg_formatter)
