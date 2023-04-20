@@ -1,3 +1,5 @@
+from typing import List, Dict
+
 import streamlit as st
 import pandas as pd
 from trueskill import Rating
@@ -8,7 +10,7 @@ from .versus_stats import versus_stats_widget
 from .match_distribution import match_distribution_widget
 
 
-def extra_stats(head2head: dict[str, dict[str, int]], players: list[Rating]) -> None:
+def extra_stats(head2head: Dict[str, Dict[str, int]], players: List[Rating]) -> None:
     """Section that adds expandable extra stats"""
 
     st.subheader("Extra stats")

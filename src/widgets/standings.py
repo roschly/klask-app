@@ -1,10 +1,10 @@
-from typing import List
+from typing import List, Dict
+from itertools import takewhile
 
 import pandas as pd
 import trueskill as ts
 import streamlit as st
 import numpy as np
-from itertools import takewhile
 
 from .utils import ts_setup
 from ..elo_system import ELOSystem
@@ -28,22 +28,6 @@ def _get_elo_ratings(matches: List[db.Match]):
     return elo_system.players
 
 
-def _get_ratings(matches: List[db.Match], default_rating: float = 25):
-    all_winners = {match.winner for match in matches}
-    all_losers = {match.loser for match in matches}
-    all_players = all_winners | all_losers
-    ratings = {player: ts.Rating(default_rating) for player in all_players}
-
-    for match in matches:
-        rating1 = ratings[match.winner]
-        rating2 = ratings[match.loser]
-        new1, new2 = ts.rate_1vs1(rating1, rating2)
-        ratings[match.winner] = new1
-        ratings[match.loser] = new2
-
-    return ratings
-
-
 def _championed_player_name(standings: pd.DataFrame) -> pd.DataFrame:
     df = pd.read_csv(db.HALL_OF_FAME)
     df.sort_values(["year", "month"], ascending=[False, False], inplace=True)
@@ -64,7 +48,7 @@ def _player_streak(streak_len: int, res: str):
 
 
 def _get_standings_frame(
-    players: dict[str, ts.Rating], player_records: dict[str, list[int]]
+    players: Dict[str, ts.Rating], player_records: Dict[str, List[int]]
 ) -> pd.DataFrame:
     standings = {
         player: {
@@ -127,7 +111,7 @@ def _get_standings_frame(
 
 
 def standings(
-    players: dict[str, ts.Rating], player_records: dict[str, list[int]]
+    players: Dict[str, ts.Rating], player_records: Dict[str, List[int]]
 ) -> None:
     """Standings dataframe widget"""
     frame = _get_standings_frame(players, player_records)

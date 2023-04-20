@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 
 import pandas as pd
 import streamlit as st
@@ -10,7 +10,7 @@ STATS = ["Num matches", "WR %"]
 
 
 def _get_individual_stats(
-    player: str, head2head: dict[str, dict[str, int]]
+    player: str, head2head: Dict[str, Dict[str, int]]
 ) -> pd.DataFrame:
     """stats from a player versus the rest"""
     all_players = db.list_players()
@@ -37,7 +37,7 @@ def _get_individual_stats(
     return df
 
 
-def versus_stats_widget(head2head: dict[str, dict[str, int]]) -> None:
+def versus_stats_widget(head2head: Dict[str, Dict[str, int]]) -> None:
     """Versus stats widget"""
     all_players = db.list_players()
 

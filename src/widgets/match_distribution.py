@@ -1,3 +1,4 @@
+from typing import Dict
 from itertools import combinations
 
 import pandas as pd
@@ -8,7 +9,7 @@ import src.db as db
 from .winrate_rating import num_matches_between_players
 
 
-def match_distribution_widget(head2head: dict[str, dict[str, int]]) -> None:
+def match_distribution_widget(head2head: Dict[str, Dict[str, int]]) -> None:
     """
     A sorted stacked bar chart of player matches.
     I.e. each stack represents the absolute/relative number of matches against a specific player (regardless of outcome).

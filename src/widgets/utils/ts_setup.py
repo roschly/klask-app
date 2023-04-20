@@ -10,7 +10,7 @@ DRAW_PROBABILITY = 0.0  # Not possible to draw
 MU = 25.0  # Default TrueSkill rating
 
 
-def ts_setup():
+def ts_setup() -> None:
     ts.setup(
         beta=BETA,
         sigma=SIGMA,

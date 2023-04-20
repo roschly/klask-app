@@ -1,3 +1,5 @@
+from typing import List, Dict, Tuple
+
 import pydot
 import matplotlib
 from trueskill import Rating
@@ -7,9 +9,9 @@ from .winrate_rating import calc_winrate, num_matches_between_players
 
 def _find_dominators(
     player: str,
-    winrates: list[tuple[str, float]],
-    head2head: dict[str, dict[str, int]],
-) -> list[str]:
+    winrates: List[Tuple[str, float]],
+    head2head: Dict[str, Dict[str, int]],
+) -> List[str]:
     """Find the list of players that dominate this player."""
     # only keep valid dominance winrates, i.e. <= 0.25 and at least 3 matches
     dominators = [
@@ -22,9 +24,9 @@ def _find_dominators(
 
 def _find_nemeses(
     player: str,
-    winrates: list[tuple[str, float]],
-    head2head: dict[str, dict[str, int]],
-) -> list[str]:
+    winrates: List[Tuple[str, float]],
+    head2head: Dict[str, Dict[str, int]],
+) -> List[str]:
     """Find the list of possible nemeses of the player.
     A nemeses is the one(s) that the player has the lowest winrate against,
     provided it is lower than 50 % and at least 3 matches have been played.
@@ -45,7 +47,7 @@ def _find_nemeses(
 
 
 def nemesis_plot(
-    head2head: dict[str, dict[str, int]], players: list[Rating]
+    head2head: Dict[str, Dict[str, int]], players: List[Rating]
 ) -> pydot.Dot:
     """Graphviz DOT graph of player nemeses."""
 
