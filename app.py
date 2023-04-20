@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 import yaml
 
@@ -7,6 +6,7 @@ import streamlit as st
 import src.db as db
 from src import widgets
 from src.bootstrap import bootstrap
+from src.process_match_data import process_match_data
 
 
 def main():
@@ -38,8 +38,10 @@ def main():
     widgets.new_match()
 
     matches = db.list_matches()
+    history = process_match_data(matches)
+
     if matches:
-        widgets.standings(matches)
+        widgets.standings(history["players"], history["records"])
         widgets.trueskill_evolution(matches)
         widgets.extra_stats(matches)
         widgets.matches_list(matches)

@@ -4,6 +4,7 @@ import pandas as pd
 import trueskill as ts
 import streamlit as st
 import numpy as np
+from itertools import takewhile
 
 from .utils import ts_setup
 from ..elo_system import ELOSystem
@@ -51,23 +52,20 @@ def _championed_player_name(standings: pd.DataFrame) -> pd.DataFrame:
     return standings
 
 
-def _player_streak(streak: str):
-    count = int(streak[1:])
+def _player_streak(streak_len: int, res: str):
+    if res is None:
+        return "-"
+    streak = res + str(streak_len)
 
-    if (streak[0] == "W") & (count > 1):
-        return streak + " " + "🔥" * (count - 1)
+    if res == "W":
+        streak += " " + "🔥" * (streak_len - 1)
+
     return streak
 
 
-def _get_standings_frame(matches: List[db.Match]) -> pd.DataFrame:
-    players = _get_ratings(matches)
-    players_elo = _get_elo_ratings(matches)
-
-    player_records = {player: [] for player in players}
-    for match in matches:
-        player_records[match.winner].append(1)
-        player_records[match.loser].append(0)
-
+def _get_standings_frame(
+    players: dict[str, ts.Rating], player_records: dict[str, list[int]]
+) -> pd.DataFrame:
     standings = {
         player: {
             "Player": player,
@@ -76,35 +74,33 @@ def _get_standings_frame(matches: List[db.Match]) -> pd.DataFrame:
         }
         for player in players
     }
+
     for player, record in player_records.items():
         standings[player]["W"] = record.count(1)
         standings[player]["L"] = record.count(0)
-        standings[player]["win_rate"] = 100 * record.count(1) / len(record)
+
+        if len(record) == 0:
+            standings[player]["win_rate"] = 0
+        else:
+            standings[player]["win_rate"] = 100 * record.count(1) / len(record)
 
         if len(record) >= 10:
             l10 = record[-10:]
         else:
             l10 = record
 
-        l10w, l10l = l10.count(1), l10.count(0)
-        standings[player]["L10"] = f"{l10w}-{l10l}"
+        l10_wins, l10_losses = l10.count(1), l10.count(0)
+        standings[player]["L10"] = f"{l10_wins}-{l10_losses}"
 
-        last = record[-1]
-        count = 0
-        for res in record[::-1]:
-            if res == last:
-                count += 1
-            else:
-                break
-
-        if last == 0:
-            streak = f"L{count}"
+        # Get current win or loss streak for player
+        streak_len = sum(1 for _ in takewhile(lambda x: x == record[-1], record[::-1]))
+        if len(record) > 0:
+            res = "L" if record[-1] == 0 else "W"
         else:
-            streak = f"W{count}"
+            res = None
 
-        standings[player]["Streak"] = streak
+        standings[player]["Streak"] = _player_streak(streak_len, res)
 
-    df_matches = pd.DataFrame(matches)
     rows = []
     for player, standing in standings.items():
         rows.append(
@@ -119,7 +115,7 @@ def _get_standings_frame(matches: List[db.Match]) -> pd.DataFrame:
                 "Rating": round(standing["Rating"], 2),
                 # "TrueSkillLB": round(standing["TrueSkill_LC"], 2),
                 "L10": standing["L10"],
-                "Streak": _player_streak(standing["Streak"]),
+                "Streak": standing["Streak"],
             }
         )
     df = pd.DataFrame(rows)
@@ -130,9 +126,11 @@ def _get_standings_frame(matches: List[db.Match]) -> pd.DataFrame:
     return df
 
 
-def standings(matches: List[db.Match]) -> None:
+def standings(
+    players: dict[str, ts.Rating], player_records: dict[str, list[int]]
+) -> None:
     """Standings dataframe widget"""
-    frame = _get_standings_frame(matches)
+    frame = _get_standings_frame(players, player_records)
     st.subheader("Standings")
 
     # add emoji to champion name, if hall of fame with previous winner exists
