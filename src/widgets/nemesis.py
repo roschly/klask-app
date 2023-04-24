@@ -47,14 +47,14 @@ def _find_nemeses(
 
 
 def nemesis_plot(
-    head2head: Dict[str, Dict[str, int]], players: List[Rating]
+    head2head: Dict[str, Dict[str, int]], player_ratings: Dict[str, Rating]
 ) -> pydot.Dot:
     """Graphviz DOT graph of player nemeses."""
 
     dot = pydot.Dot()
 
-    for player in players:
-        rating = players[player].mu
+    for player, ts in player_ratings.items():
+        rating = ts.mu
 
         # cap rating between Lower and Upper values, e.g. 15 and 35
         # convert to range [0;1] for color map

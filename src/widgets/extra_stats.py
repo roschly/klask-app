@@ -10,7 +10,9 @@ from .versus_stats import versus_stats_widget
 from .match_distribution import match_distribution_widget
 
 
-def extra_stats(head2head: Dict[str, Dict[str, int]], players: List[Rating]) -> None:
+def extra_stats(
+    head2head: Dict[str, Dict[str, int]], player_ratings: Dict[str, Rating]
+) -> None:
     """Section that adds expandable extra stats"""
 
     st.subheader("Extra stats")
@@ -30,7 +32,7 @@ def extra_stats(head2head: Dict[str, Dict[str, int]], players: List[Rating]) -> 
         st.write(
             "Legend: blue dashed == nemesis, red dashed == domination, purple solid == nemesis AND domination."
         )
-        st.graphviz_chart(nemesis_plot(head2head, players).to_string())
+        st.graphviz_chart(nemesis_plot(head2head, player_ratings).to_string())
 
     # versus stats
     with st.expander("Versus stats"):

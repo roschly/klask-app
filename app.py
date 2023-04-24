@@ -6,7 +6,7 @@ import streamlit as st
 import src.db as db
 from src import widgets
 from src.bootstrap import bootstrap
-from src.process_match_data import process_match_data
+from src.match_history import create_match_history
 
 
 def main():
@@ -38,12 +38,12 @@ def main():
     widgets.new_match()
 
     matches = db.list_matches()
-    history = process_match_data(matches)
+    match_history = create_match_history(matches)
 
     if matches:
-        widgets.standings(history["players"], history["records"])
-        widgets.trueskill_evolution(history["ratings_history"])
-        widgets.extra_stats(history["h2h"], history["players"])
+        widgets.standings(match_history.ts_ratings, match_history.win_loss_records)
+        widgets.trueskill_evolution(match_history.ts_ratings_history)
+        widgets.extra_stats(match_history.head2head, match_history.ts_ratings)
         widgets.matches_list(matches)
 
 
