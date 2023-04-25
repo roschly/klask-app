@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 
 import pandas as pd
 import streamlit as st
@@ -6,21 +6,12 @@ import streamlit as st
 import src.db as db
 from .winrate_rating import calc_winrate, num_matches_between_players
 
-STATS = ["Num matches", "WR %", "Most freq result"]
+STATS = ["Num matches", "WR %"]
 
 
-def _most_freq_result(A: str, B: str, df: pd.DataFrame) -> str:
-    """Mode of scores"""
-    cond1 = (df.winner == A) & (df.loser == B)
-    cond2 = (df.winner == B) & (df.loser == A)
-    matches = df[cond1 | cond2]
-    # TODO: handle more than one mode...?
-    if len(matches) == 0:
-        return None
-    return matches.score.mode()[0]
-
-
-def _get_individual_stats(player: str, matches: pd.DataFrame) -> pd.DataFrame:
+def _get_individual_stats(
+    player: str, head2head: Dict[str, Dict[str, int]]
+) -> pd.DataFrame:
     """stats from a player versus the rest"""
     all_players = db.list_players()
     df = pd.DataFrame(
@@ -29,7 +20,7 @@ def _get_individual_stats(player: str, matches: pd.DataFrame) -> pd.DataFrame:
     )
     df["WR %"] = pd.Series(
         {
-            opponent: 100 * calc_winrate(player, opponent, matches)
+            opponent: 100 * calc_winrate(player, opponent, head2head)
             for opponent in all_players
             if opponent != player
         }
@@ -37,15 +28,7 @@ def _get_individual_stats(player: str, matches: pd.DataFrame) -> pd.DataFrame:
 
     df["Num matches"] = pd.Series(
         {
-            opponent: num_matches_between_players(player, opponent, matches)
-            for opponent in all_players
-            if opponent != player
-        }
-    )
-
-    df["Most freq result"] = pd.Series(
-        {
-            opponent: _most_freq_result(player, opponent, matches)
+            opponent: num_matches_between_players(player, opponent, head2head)
             for opponent in all_players
             if opponent != player
         }
@@ -54,7 +37,7 @@ def _get_individual_stats(player: str, matches: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def versus_stats_widget(matches: pd.DataFrame) -> None:
+def versus_stats_widget(head2head: Dict[str, Dict[str, int]]) -> None:
     """Versus stats widget"""
     all_players = db.list_players()
 
@@ -66,7 +49,7 @@ def versus_stats_widget(matches: pd.DataFrame) -> None:
     with col3:
         ascending = st.selectbox("Ascending", [False, True])
 
-    stats = _get_individual_stats(player=player, matches=matches)
+    stats = _get_individual_stats(player=player, head2head=head2head)
     st.table(
         stats.sort_values(sort_by, ascending=ascending).style.format(
             {"WR %": "{:.2f}", "Num matches": "{:.0f}"}

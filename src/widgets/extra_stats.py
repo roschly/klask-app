@@ -1,8 +1,8 @@
-from typing import List
-from pathlib import Path
+from typing import List, Dict
 
 import streamlit as st
 import pandas as pd
+from trueskill import Rating
 
 from .. import db
 from .nemesis import nemesis_plot
@@ -10,16 +10,16 @@ from .versus_stats import versus_stats_widget
 from .match_distribution import match_distribution_widget
 
 
-def extra_stats(matches: List[db.Match]) -> None:
+def extra_stats(
+    head2head: Dict[str, Dict[str, int]], player_ratings: Dict[str, Rating]
+) -> None:
     """Section that adds expandable extra stats"""
-
-    df_matches = pd.DataFrame(matches)
 
     st.subheader("Extra stats")
 
     # match distribution
     with st.expander("Match distribution"):
-        match_distribution_widget(df_matches)
+        match_distribution_widget(head2head)
 
     # nemesis and domination plot
     with st.expander("Nemesis and domination plot"):
@@ -32,11 +32,11 @@ def extra_stats(matches: List[db.Match]) -> None:
         st.write(
             "Legend: blue dashed == nemesis, red dashed == domination, purple solid == nemesis AND domination."
         )
-        st.graphviz_chart(nemesis_plot(df_matches, matches).to_string())
+        st.graphviz_chart(nemesis_plot(head2head, player_ratings).to_string())
 
     # versus stats
     with st.expander("Versus stats"):
-        versus_stats_widget(df_matches)
+        versus_stats_widget(head2head)
 
     # hall of fame
     if db.HALL_OF_FAME.exists():

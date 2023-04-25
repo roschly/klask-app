@@ -1,6 +1,5 @@
 import streamlit as st
 
-from src.match import Match
 import src.db as db
 
 

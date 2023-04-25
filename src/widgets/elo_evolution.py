@@ -1,15 +1,15 @@
 from typing import List
-import matplotlib.pyplot as plt
-import seaborn as sns
+
 import pandas as pd
 import streamlit as st
+
 from .. import db
 from ..elo_system import ELOSystem
 
 pd.options.plotting.backend = "plotly"
 
 
-def _build_frame(matches: List[db.Match]):
+def _build_frame(matches: List[db.Match]) -> pd.DataFrame:
     elo_system = ELOSystem([player for player in db.players])
     # p = {player: ts.Rating(25) for player in db.players}
     r = []
