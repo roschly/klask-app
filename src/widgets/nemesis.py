@@ -72,10 +72,11 @@ def nemesis_plot(
             )
         )
 
+    players = player_ratings.keys()
     for player in players:
         winrates = [
             (opponent, calc_winrate(player, opponent, head2head))
-            for opponent in players.keys()
+            for opponent in players
             if opponent != player
         ]
 
