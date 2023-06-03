@@ -7,4 +7,3 @@ pyyaml
 plotly
 pydot
 python-dateutil
-pytest

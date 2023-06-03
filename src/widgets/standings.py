@@ -9,7 +9,8 @@ import numpy as np
 from .utils import ts_setup
 from ..elo_system import ELOSystem
 from .. import db
-from .winrate_rating import weighted_average_winrate
+
+# from .winrate_rating import weighted_average_winrate
 
 
 ts_setup()

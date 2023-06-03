@@ -1,7 +1,7 @@
 from typing import Dict
+from statistics import median
 
 import pandas as pd
-from statistics import median
 
 import src.db as db
 

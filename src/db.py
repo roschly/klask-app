@@ -1,14 +1,11 @@
-import os
-import pytz
-from typing import List, Optional, Protocol, Set
-from uuid import uuid1
-from dataclasses import dataclass
+from typing import List
 from datetime import datetime
 from pathlib import Path
-from dateutil.parser import parse
+
 import yaml
 import jsons
-
+import pytz
+from dateutil.parser import parse
 
 from .match import Match
 

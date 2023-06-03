@@ -1,0 +1,81 @@
+[flake8]
+
+per-file-ignores = 
+    # ignore unused imports in __init__ files
+    __init__.py:F401, 
+
+# D101 Missing docstring in public class
+; select = D101 
+
+# NOTE: some of the codes should be removed from ignore, when we start improving the code.
+# e.g. SIM (code simplification), CC (cognitive complexity), ANN (function annotations)
+; ignore = E501, E203, W503, CF, CC, SIM, ANN, ANN101, ANN401, ANN001, ANN002, ANN003, D1, D100, D102, D103, D104, D105, D107, D2, D3, D4   
+ignore =
+    # E501: line too long
+    E501,
+    # E203: whitespace before ':'
+    E203,
+    # W503: line break before binary operator
+    W503,
+    # function parameter count
+    CF,
+    # Cognitive-Complexity measures
+    CC,
+    # code simplifications
+    SIM,
+    # ANN
+    ANN,
+    # ANN101: Missing type annotation for self in method
+    ANN101,
+    # ANN401: Dynamically typed expressions (typing.Any) are disallowed
+    ANN401,
+    # ANN001: Missing type annotation for function argument
+    ANN001,
+    # ANN002: Missing type annotation for *args
+    ANN002,
+    # ANN003: Missing type annotation for *kwargs
+    ANN003,
+    # D1xx: Missing docstrings
+    D1,
+    # D100: Missing docstring in public module
+    D100,
+    # D102: Missing docstring in public method
+    D102,
+    # D103: Missing docstring in public function
+    D103,
+    # D104: Missing docstring in public package
+    D104,
+    # D105: Missing docstring in magic method
+    D105,
+    # D107: Missing docstring in __init__
+    D107,
+    # D2xx: Whitespace issues, e.g. "no blank lines allowed before function docstring"
+    D2,
+    # D3xx: Quotes issues, e.g. "use triple double quotes"
+    D3,
+    # D4xx: Docstring content issues, e.g. "first line should end with a period"
+    D4,
+
+
+exclude = 
+    test_*.py
+    .git,
+    __pycache__,
+    .ipynb_checkpoints
+
+# flake8-import-order:
+# style that only enforces groups without enforcing the order within the groups
+import-order-style = pep8
+# treat these packages as 'local'
+application-import-names = src
+
+# flake8-cognitive-complexity:
+max-cognitive-complexity = 6
+
+# flake8-mccabe (cyclomatic complexity)
+; max-complexity = MAX_COMPLEXITY
+
+# flake8-functions:
+; max-function-length = MAX_FUNCTION_LENGTH
+; max-parameters-amount = 10
+; max-returns-amount = 3
