@@ -1,1 +1,9 @@
 black
+pytest
+flake8
+flake8-docstrings
+flake8-simplify
+flake8-cognitive-complexity
+flake8-functions
+flake8-annotations
+flake8-import-order

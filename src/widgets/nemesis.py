@@ -46,6 +46,22 @@ def _find_nemeses(
     return nemeses
 
 
+def add_node_with_style(player, rating):
+    # cap rating between Lower and Upper values, e.g. 15 and 35
+    # convert to range [0;1] for color map
+    L, U = 15, 35  # 15 and 35 ensures 25 (default rating) corresponds to 0.5
+    r = min(max(0, rating - L), U - L) / (U - L)
+    # use capped and converted rating as color map percentage
+    cmap = matplotlib.cm.get_cmap("coolwarm")
+    hex_color = matplotlib.colors.rgb2hex(cmap(r))
+
+    return pydot.Node(
+        name=player,
+        style="filled",
+        color=hex_color,
+    )
+
+
 def nemesis_plot(
     head2head: Dict[str, Dict[str, int]], player_ratings: Dict[str, Rating]
 ) -> pydot.Dot:
@@ -53,24 +69,25 @@ def nemesis_plot(
 
     dot = pydot.Dot()
 
-    for player, ts in player_ratings.items():
-        rating = ts.mu
+    # The old way of adding all nodes beforehand
+    # for player, ts in player_ratings.items():
+    #     rating = ts.mu
 
-        # cap rating between Lower and Upper values, e.g. 15 and 35
-        # convert to range [0;1] for color map
-        L, U = 15, 35  # 15 and 35 ensures 25 (default rating) corresponds to 0.5
-        r = min(max(0, rating - L), U - L) / (U - L)
-        # use capped and converted rating as color map percentage
-        cmap = matplotlib.cm.get_cmap("coolwarm")
-        hex_color = matplotlib.colors.rgb2hex(cmap(r))
+    #     # cap rating between Lower and Upper values, e.g. 15 and 35
+    #     # convert to range [0;1] for color map
+    #     L, U = 15, 35  # 15 and 35 ensures 25 (default rating) corresponds to 0.5
+    #     r = min(max(0, rating - L), U - L) / (U - L)
+    #     # use capped and converted rating as color map percentage
+    #     cmap = matplotlib.cm.get_cmap("coolwarm")
+    #     hex_color = matplotlib.colors.rgb2hex(cmap(r))
 
-        dot.add_node(
-            pydot.Node(
-                name=player,
-                style="filled",
-                color=hex_color,
-            )
-        )
+    #     dot.add_node(
+    #         pydot.Node(
+    #             name=player,
+    #             style="filled",
+    #             color=hex_color,
+    #         )
+    #     )
 
     players = player_ratings.keys()
     for player in players:
@@ -96,6 +113,18 @@ def nemesis_plot(
             elif p in nemeses - both:
                 color = "blue"
             winrate = calc_winrate(player, p, head2head)
+            # add nodes
+            p_node = add_node_with_style(player=p, rating=player_ratings[p].mu)
+            player_node = add_node_with_style(
+                player=player, rating=player_ratings[player].mu
+            )
+
+            # Only show players/nodes with edges
+            # NOTE: this is not optimal, since the same node is added multiple times,
+            # but it acts as a set, so it works.
+            # A better way would be to add styling after nodes have been created via the add_edge method
+            dot.add_node(p_node)
+            dot.add_node(player_node)
             edge = pydot.Edge(
                 pydot.Node(name=p),
                 pydot.Node(name=player),

@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import Dict
 
 import pandas as pd
 import streamlit as st

@@ -9,7 +9,8 @@ import numpy as np
 from .utils import ts_setup
 from ..elo_system import ELOSystem
 from .. import db
-from .winrate_rating import weighted_average_winrate
+
+# from .winrate_rating import weighted_average_winrate
 
 
 ts_setup()
@@ -106,7 +107,6 @@ def _get_standings_frame(
     df.sort_values("Rating", ascending=False, inplace=True)
     df["Pos"] = np.arange(len(players)) + 1
     df.set_index("Pos", inplace=True)
-
     return df
 
 
@@ -115,12 +115,16 @@ def standings(
 ) -> None:
     """Standings dataframe widget"""
     frame = _get_standings_frame(players, player_records)
-    st.subheader("Standings")
 
     # add emoji to champion name, if hall of fame with previous winner exists
     # use copy to avoid mutating cached dataframe
     if db.HALL_OF_FAME.exists():
         frame = _championed_player_name(frame.copy())
+
+    st.subheader("Standings")
+
+    # only show players that have played so far
+    frame = frame[frame["W"] + frame["L"] > 0]
 
     st.table(
         frame.style.format(
