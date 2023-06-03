@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, List, Dict
 from dataclasses import dataclass
 
 import pandas as pd
@@ -16,9 +16,9 @@ Player = str
 
 @dataclass
 class MatchHistory:
-    ts_ratings: dict[Player:float] = None
-    win_loss_records: dict[Player:int] = None
-    head2head: dict[Player : dict[Player:int]] = None
+    ts_ratings: Dict[Player, float] = None
+    win_loss_records: Dict[Player, int] = None
+    head2head: Dict[Player, Dict[Player, int]] = None
     ts_ratings_history: pd.DataFrame = None
 
     def __post_init__(self):
@@ -31,7 +31,7 @@ class MatchHistory:
         }
 
 
-def create_match_history(matches: list[db.Match]) -> dict[str, Any]:
+def create_match_history(matches: List[db.Match]) -> Dict[str, Any]:
     """Create the match history based on all played matches, containing:
     - trueskill ratings
     - win_loss_records
